@@ -1,0 +1,33 @@
+---
+name: <verb-noun>
+description: >-
+  <Action> <task> with executable scripts. Use for: "<trigger phrases>".
+metadata:
+  version: 1.0.0
+---
+
+# <verb-noun>
+
+<One-line purpose>
+
+## Quick Start
+
+```bash
+python .agents/runbooks/<verb-noun>/scripts/main.py [options]
+```
+
+## What it does
+
+1. <step>
+2. <step>
+3. <step>
+
+## References
+
+- <link to related docs>
+
+## Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| <problem> | <solution> |

@@ -1,0 +1,208 @@
+---
+name: YOUR-SKILL-NAME
+description: [Action verb] [what]. Use for: [trigger patterns].
+metadata:
+  version: 1.0.0
+---
+
+# Your Skill Title
+
+## Overview
+
+[2-3 sentences about what your skill enables]
+
+**Example:**
+```
+This skill generates production-ready starter files for domolibrary2
+development. Whether you're adding a test, route handler, or entity class,
+this skill ensures your code follows domolibrary2 conventions: async-first
+patterns, type hints, and proper error handling.
+```
+
+## Core Capabilities
+
+- [capability 1]
+- [capability 2]
+- [capability 3]
+- [capability 4]
+- [capability 5]
+
+**Example:**
+```
+- **Test files**: Async pytest with environment-variable fixtures
+- **Route modules**: Single-file or folder patterns with decorators
+- **Class entities**: Entity classes inheriting from DomoEntity
+- **Utility functions**: Helper functions with complete type hints
+- **Pattern inspection**: Reads existing code to learn from patterns
+```
+
+## When to Use
+
+[3-5 scenarios where your skill solves problems]
+
+**Example:**
+```
+Generate a sample file when:
+- Starting a new test for a feature
+- Adding a new route handler or endpoint wrapper
+- Creating a new entity class (DomoX)
+- Writing a utility function following domolibrary2 style
+- Onboarding team members to consistent patterns
+```
+
+## Quick Start
+
+[3-5 concrete commands or steps with examples]
+
+**Example:**
+```
+### Generate a Test File
+
+\`\`\`
+/create-sample-file test
+\`\`\`
+
+Produces an async pytest file with fixtures and error handling.
+
+### Generate a Route Module
+
+\`\`\`
+/create-sample-file route
+\`\`\`
+
+Produces a route handler with decorators and logging.
+```
+
+## Detailed Workflow
+
+### Step 1: [Phase name]
+
+[Instructions for this phase]
+
+### Step 2: [Phase name]
+
+[Instructions for this phase]
+
+### Step 3: [Phase name]
+
+[Instructions for this phase]
+
+**Example of complete workflow:**
+```
+### Step 1: Understand the Context
+
+When generating a file, consider:
+- **File type**: Test, route, class, or utility?
+- **Domain**: What is this for?
+- **Complexity**: Simple or complex?
+- **Dependencies**: What does it depend on?
+
+### Step 2: Reference Existing Patterns
+
+See [tests/AGENTS.md](#) for test structure.
+See [routes/AGENTS.md](#) for route patterns.
+
+### Step 3: Generate Template
+
+Use Quick Start commands.
+
+### Step 4: Customize & Validate
+
+- [ ] Type hints on all parameters
+- [ ] Docstrings complete
+- [ ] Error handling appropriate
+
+### Step 5: Run Validation
+
+\`\`\`powershell
+.\scripts\lint.ps1
+\`\`\`
+```
+
+## References
+
+Detailed guidance on specific topics:
+
+- **[reference-file-1.md](./references/reference-file-1.md)** — [Description]
+- **[reference-file-2.md](./references/reference-file-2.md)** — [Description]
+- **[reference-file-3.md](./references/reference-file-3.md)** — [Description]
+
+**Example:**
+```
+- **[.github/instructions/general.instructions.md](#)** — Project-wide conventions
+- **[.github/instructions/tests.instructions.md](#)** — Test standards
+- **[.github/instructions/routes.instructions.md](#)** — Route patterns
+```
+
+## Examples
+
+### Example 1: [Scenario name]
+
+**Command**: [exact command to run]
+
+**Output**: [actual generated code or output]
+
+**Key patterns demonstrated**:
+- Pattern 1
+- Pattern 2
+- Pattern 3
+
+### Example 2: [Scenario name]
+
+**Command**: [exact command to run]
+
+**Output**: [actual generated code or output]
+
+**Key patterns demonstrated**:
+- Pattern 1
+- Pattern 2
+- Pattern 3
+
+### Example 3: [Scenario name]
+
+**Command**: [exact command to run]
+
+**Output**: [actual generated code or output]
+
+**Key patterns demonstrated**:
+- Pattern 1
+- Pattern 2
+- Pattern 3
+
+---
+
+**Notes for examples:**
+- Include complete, working code (not "..." omissions)
+- Show actual output that users will see
+- Explain why each pattern matters
+- Make it copy-paste ready
+
+## Troubleshooting
+
+**Q: [Common question]**
+
+A: [Clear, actionable answer]
+
+Example links: See [reference file](#) for details.
+
+---
+
+**Q: [Common question]**
+
+A: [Clear, actionable answer]
+
+---
+
+**Q: [Common question]**
+
+A: [Clear, actionable answer]
+
+---
+
+## Next Steps
+
+[Optional: What users should do after using skill]
+
+- Try using with a real project
+- Combine with other skills [X] and [Y]
+- Check out examples in `assets/`
