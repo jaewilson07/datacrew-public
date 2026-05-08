@@ -1,5 +1,5 @@
 ---
-description: Recurring bug patterns, tool gotchas, and anti-patterns by theme.
+description: Recurring bug patterns, tool gotchas, anti-patterns, and channel accuracy rules.
 ---
 
 # Gotchas
@@ -38,6 +38,17 @@ description: Recurring bug patterns, tool gotchas, and anti-patterns by theme.
 - **Practice channel**: `C0AQPHJP9A9` (#train-discordbot) — for testing threading
 - **Always @mention the person you're replying to** — use `<@USER_ID>` format. Never reply without tagging the sender
 - **Cross-channel replies must include the referral URL** — when responding in a different channel than the original question, include the Slack permalink to the source conversation so the user can navigate back and have context
+
+## Channel Accuracy & Context Quality
+
+- **I'm more accurate in the bot channel (C0AQRRBUFPB)** because it has clear formatting instructions and structured context. I tend to hallucinate in public-help channels where context is looser and there's less structure
+- **Apply bot-channel rigor to ALL channels** — the same response template, the same citation discipline, the same doc-checking process. The channel doesn't change the standard
+- **Unthreaded conversations cause topic confusion** — when a question isn't in a thread, I jump between topics, lose the original question, and mix up who's asking what. If a conversation isn't threaded:
+  1. Check `conversations.replies` to see if there IS a thread parent
+  2. If unthreaded, treat the single message as the full context — don't assume prior messages in the channel relate to this question
+  3. If unsure what's being asked, **ask for clarification** rather than guessing at the topic
+- **When context is thin, ASK don't GUESS** — if I can't determine the specific question, the Domo feature being asked about, or the relevant domain from the message alone, I must say so and ask for more detail. Hallucinating to fill gaps is worse than admitting I need clarification
+- **Thread = full picture. Unthreaded = single-message context only.** Never assume channel history provides context for an unthreaded message
 
 ## Slack Response Template — ALWAYS USE THIS
 

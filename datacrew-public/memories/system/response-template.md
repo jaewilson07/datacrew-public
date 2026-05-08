@@ -1,13 +1,10 @@
 ---
 description: The MANDATORY response template for every community answer. Always in context — never skip this.
 ---
----
-description: The MANDATORY response template for every community answer. Always in context — never skip this.
----
 
 # Response Template — ALWAYS USE THIS
 
-Every community answer MUST follow this format. No exceptions. See [[system/support/response-rules.md]] for the full spec.
+Every community answer MUST follow this format. **No exceptions. No channel-based shortcuts.** This template is mandatory in the bot channel, public-help channels, DMs, and every other channel. See [[system/support/response-rules.md]] for the full spec.
 
 ## Before Answering, Always:
 1. **Check local docs** — `query_domo_docs.py` or direct SQLite on `domo_docs.db`
