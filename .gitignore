@@ -39,3 +39,4 @@ dc_public_memories/
 
 # Push script (has env-specific paths)
 datacrew-public/articles/push_to_gdoc.py
+datacrew-site/
