@@ -22,31 +22,6 @@ python .agents/runbooks/<verb-noun>/scripts/main.py [options]
 2. <step>
 3. <step>
 
-## Layout
-
-```
-.agents/runbooks/<verb-noun>/
-├── SKILL.md                 ← this file
-├── scripts/
-│   └── main.py              ← executable CLI
-├── references/              ← optional: design/planning guides
-├── prompts/                 ← optional: canonical LLM system prompts the scripts call
-├── assets/                  ← optional: templates / canonical examples
-├── EXPORTS/                 ← optional: disposable output (gitignored)
-└── research/                ← optional: experiment trail that grounds the rules
-    └── <topic>/
-        ├── README.md
-        ├── <slug>.brief.yaml
-        ├── <slug>_findings.md
-        ├── findings-summary.md
-        └── reproducibility.md
-```
-
-## Research / Reproducibility
-
-<If this runbook has experimental knowledge baked in, point at `research/`.
-EXPORTS is disposable — reproducibility comes from briefs + findings docs.>
-
 ## References
 
 - <link to related docs>

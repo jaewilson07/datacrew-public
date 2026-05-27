@@ -3,7 +3,7 @@ name: grill-me
 description: Interviews the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user wants to stress-test a plan, get grilled on their design, or mentions "grill me".
 metadata:
   version: 1.0.0
-  updated: 2026-04-03
+  updated: 2026-05-08
 ---
 
 # grill-me

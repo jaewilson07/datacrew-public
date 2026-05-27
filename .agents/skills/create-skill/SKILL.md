@@ -13,8 +13,8 @@ metadata:
 ## Overview
 
 Create or modernize skill documentation so each skill is concise, actionable,
-and structurally consistent. Follow the workflow steps below for policy
-enforcement details.
+and structurally consistent. This skill also enforces `env_loader` policy and
+`EXPORTS/` placement for runtime outputs.
 
 ## Core Capabilities
 
@@ -31,35 +31,19 @@ enforcement details.
 - A skill has scripts that still use raw `load_dotenv`
 - A skill writes generated outputs outside an `EXPORTS/` folder
 
-## Skill location
-
-Skills live in the **nearest** `.agents/skills/` to the package they serve.
-
-| Skill type | Store in |
-|------------|---------|
-| **Meta-skill** — about how to work in this repo (`create-plan`, `handoff`, `create-runbook`, etc.) | root `.agents/skills/<name>/` |
-| **Shared** — used by agents across multiple packages | root `.agents/skills/<name>/` |
-| **Library-specific** — workflow or domain knowledge for one library | `<library>/.agents/skills/<name>/` |
-| **App-specific** — workflow or domain knowledge for one app | `<app>/.agents/skills/<name>/` |
-| **Infrastructure-specific** | `infrastructure/vps/.agents/skills/<name>/` |
-
-When in doubt: if only engineers working on package X would ever invoke this skill, it belongs in `<package>/.agents/skills/`.
-
 ## Quick Start
 
 ```bash
-# Determine where the skill belongs (see Skill location above), then:
-mkdir -p <target>/.agents/skills/<skill-name>/{references,assets,scripts,EXPORTS}
+# Create a new skill folder
+mkdir -p .agents/skills/<skill-name>/{references,assets,scripts,EXPORTS}
 
-# Seed SKILL.md from template (template lives in root meta-skills)
+# Seed SKILL.md from template
 cp .agents/skills/create-skill/assets/SKILL.md.template \
-   <target>/.agents/skills/<skill-name>/SKILL.md
+   .agents/skills/<skill-name>/SKILL.md
 
 # Verify frontmatter quickly
-rg -n "^name:|^description:|^metadata:|^  version:" <target>/.agents/skills/<skill-name>/SKILL.md
+rg -n "^name:|^description:|^metadata:|^  version:" .agents/skills/<skill-name>/SKILL.md
 ```
-
-If any required frontmatter fields (`name`, `description`, `metadata.version`) are missing or invalid, report which fields need correction before proceeding.
 
 ## Detailed Workflow
 
@@ -101,7 +85,7 @@ from env_loader import load_env
 load_env()
 ```
 
-Never introduce new direct `load_dotenv` calls in any skill, runbook, or test script in the monorepo.
+Never introduce new direct `load_dotenv` calls in skill/runbook/test scripts.
 
 ### Step 5: Enforce EXPORTS policy
 
@@ -114,8 +98,6 @@ Both paths are gitignored. **Never commit binary or generated output files**
 (images, JSON snapshots, fixtures) outside these directories. The pre-push
 safety hook blocks `/data/` paths from being tracked.
 
-If a skill does not generate runtime outputs, the `EXPORTS/` folder can be omitted.
-
 Ensure repo `.gitignore` contains:
 
 ```text
@@ -125,7 +107,7 @@ Ensure repo `.gitignore` contains:
 ### Step 8: Enforce API-first in scripts
 
 If the skill includes scripts that invoke library capabilities:
-- Call the service's FastAPI REST route for consistent and reproducible results.
+- Call the service's FastAPI REST route for deterministic outcomes.
 - Call FastMCP tool endpoints for Letta agent–backed activity.
 - Never import library SDK internals from a skill script.
 

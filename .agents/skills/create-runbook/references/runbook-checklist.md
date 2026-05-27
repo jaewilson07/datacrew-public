@@ -12,24 +12,8 @@ Use this checklist before publishing a runbook.
 
 - [ ] `SKILL.md` exists
 - [ ] `scripts/` exists and contains at least one executable task script
-- [ ] `references/` includes focused support docs (design/planning guides) when needed
-- [ ] `prompts/` exists if any script calls a canonical LLM system prompt
+- [ ] `references/` includes focused support docs
 - [ ] `assets/templates/` exists only if templates are reused
-- [ ] `EXPORTS/` is gitignored if the runbook generates disposable artifacts
-- [ ] `research/<topic>/` exists if any rule in SKILL.md/references/ comes from experiments
-
-## Research-in-Runbook Pattern
-
-When this runbook's rules came from experiments:
-
-- [ ] **One runbook per domain.** Did not create a sibling runbook when an existing one covers the same domain — extended the existing one instead
-- [ ] **Briefs are committed.** Every experiment input (YAML/JSON spec) is under `research/<topic>/` and re-runnable via the main script
-- [ ] **Findings are committed.** Each experiment has a `<slug>_findings.md` capturing per-run verdict + what we learned
-- [ ] **`findings-summary.md` exists.** Synthesizes durable knowledge across all experiments in the topic
-- [ ] **`reproducibility.md` exists.** Tells a future agent how to re-run + what is disposable vs durable
-- [ ] **`research-log.md` exists** if the topic has active experiment cycles. Captures current state (done / queued / blocked) + how to pick up cold. Skip for topics that are essentially write-once syntheses (e.g. a one-shot web-research lane).
-- [ ] **Rules in SKILL.md / references/ cite the finding doc that grounds them.** Don't write rules in the air
-- [ ] **EXPORTS is treated as disposable.** No durable knowledge depends on a file in EXPORTS surviving
 
 ## Script Quality
 

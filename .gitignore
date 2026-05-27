@@ -31,8 +31,8 @@ domo-docs-hub/
 # Libraries (separate repos)
 libraries/
 
-# Agent runtime outputs (gitignored)
-.agents/**/EXPORTS/
+# Agent skills (internal)
+.agents/
 
 # Letta memory filesystem (synced separately, 128MB+ with binaries)
 dc_public_memories/
@@ -40,3 +40,4 @@ dc_public_memories/
 # Push script (has env-specific paths)
 datacrew-public/articles/push_to_gdoc.py
 datacrew-site/
+datacrew/
