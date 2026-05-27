@@ -16,14 +16,24 @@ helps community members, and surfaces DataCrew content.
 ```
 /workspace/
 ├── AGENTS.md              ← You are here
+├── .agents/               ← Skills, runbooks, plans (gitignored but tracked)
+│   ├── runbooks/          ← SOP-style runbooks with executable scripts
+│   │   ├── sync-memory-stores/  ← Unified git + Domo memory sync
+│   │   ├── sync-memory-to-domo/ ← Push MemFS to Domo fileset
+│   │   ├── research-in-slack/   ← Research and post to Slack
+│   │   └── update-retrospective/← Update retrospective docs
+│   ├── skills/            ← Reusable agent skills
+│   └── plans/             ← Active implementation plans
 ├── datacrew-public/       ← Agent knowledge base & scripts
 │   ├── articles/          ← Article drafts (markdown)
 │   ├── memories/         ← System memory, reference docs, user profiles
 │   ├── query_domo_docs.py← Domo docs query utility
 │   └── sync_domo_docs.py ← Domo docs sync utility
+├── datacrew/              ← DataCrew company repo (worktree, separate git)
 ├── dc_public_memories/    ← Letta memory FS (git-synced, DO NOT commit)
-├── domo-developer-portal/← Domo API docs (separate repo, DO NOT commit)
+├── domo-developer-portal/ ← Domo API docs (separate repo, DO NOT commit)
 ├── domo-docs-hub/         ← Domo KB docs (separate repo, DO NOT commit)
+├── proposals/             ← Feature proposals
 └── libraries/
     ├── cboti/             ← Google Workspace integration library
     ├── crew-dcs/          ← Domo Python SDK
@@ -91,3 +101,31 @@ mkdir -p .agents/runbooks/<verb-noun>/{scripts,references,assets}
 ```
 
 Verb-first naming for runbooks. Crosslink, don't copy.
+
+## Memory Sync
+
+Agent memory lives in `$MEMORY_DIR` (Letta MemFS). Two external stores need periodic sync:
+
+| Store | Runbook | Direction |
+|-------|---------|-----------|
+| Git repo (`datacrew-public`) | `.agents/runbooks/sync-memory-stores/` | MemFS + workspace → GitHub |
+| Domo fileset (AI Search) | `.agents/runbooks/sync-memory-to-domo/` | MemFS → Domo |
+
+**Unified sync** (both stores at once):
+```bash
+python .agents/runbooks/sync-memory-stores/scripts/main.py --verbose
+```
+
+**Individual sync:**
+```bash
+# Git only
+python .agents/runbooks/sync-memory-stores/scripts/main.py --git-only --verbose
+
+# Domo only
+python .agents/runbooks/sync-memory-stores/scripts/main.py --domo-only --verbose
+```
+
+**Cron setup:**
+```bash
+letta cron create --name "memory-stores-sync" --interval "30min" --prompt "Run /sync-memory-stores"
+```
