@@ -23,6 +23,93 @@ WORKSPACE_DIR = Path("/workspace")
 MEMORY_DIR = Path(os.environ.get("MEMORY_DIR", ""))
 DOMO_SYNC_SCRIPT = WORKSPACE_DIR / ".agents/runbooks/sync-memory-to-domo/scripts/main.py"
 
+# Infisical config for fetching Domo credentials
+INFISICAL_PROJECT_ID = "de8b26a4-8d69-46fa-bb32-9715ab396d6f"
+INFISICAL_ENV = "prod"
+INFISICAL_PATH = "/"
+INFISICAL_API_URL = "https://infisical.datacrew.space"
+
+
+# ---------------------------------------------------------------------------
+# Infisical auth
+# ---------------------------------------------------------------------------
+
+
+def fetch_infisical_secrets() -> dict[str, str]:
+    """Authenticate with Infisical and fetch secrets for Domo access.
+
+    Returns a dict of env var name -> value.
+    """
+    # Read machine identity from .env
+    env_file = WORKSPACE_DIR / ".env"
+    client_id = None
+    client_secret = None
+
+    if env_file.exists():
+        for line in env_file.read_text().splitlines():
+            line = line.strip()
+            if line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key = key.strip()
+            value = value.strip().strip("'\"")
+            if key == "INFISICAL_CLIENT_ID":
+                client_id = value
+            elif key == "INFISICAL_CLIENT_SECRET":
+                client_secret = value
+
+    if not client_id or not client_secret:
+        print("WARNING: Infisical credentials not found in .env")
+        return {}
+
+    # Authenticate
+    login_result = subprocess.run(
+        [
+            "infisical", "login",
+            "--method", "universal-auth",
+            "--client-id", client_id,
+            "--client-secret", client_secret,
+            "--plain",
+        ],
+        capture_output=True,
+        text=True,
+        env={**os.environ, "INFISICAL_API_URL": INFISICAL_API_URL},
+    )
+
+    if login_result.returncode != 0:
+        print(f"WARNING: Infisical login failed: {login_result.stderr}")
+        return {}
+
+    token = login_result.stdout.strip()
+
+    # Export secrets
+    export_result = subprocess.run(
+        [
+            "infisical", "export",
+            "--projectId", INFISICAL_PROJECT_ID,
+            "--env", INFISICAL_ENV,
+            "--path", INFISICAL_PATH,
+            "--format", "dotenv",
+        ],
+        capture_output=True,
+        text=True,
+        env={**os.environ, "INFISICAL_API_URL": INFISICAL_API_URL, "INFISICAL_TOKEN": token},
+    )
+
+    if export_result.returncode != 0:
+        print(f"WARNING: Infisical export failed: {export_result.stderr}")
+        return {}
+
+    secrets = {}
+    for line in export_result.stdout.strip().splitlines():
+        line = line.strip()
+        if "=" not in line or line.startswith("#"):
+            continue
+        key, _, value = line.partition("=")
+        secrets[key.strip()] = value.strip().strip("'\"")
+
+    return secrets
+
 
 # ---------------------------------------------------------------------------
 # Git sync
@@ -134,6 +221,7 @@ def git_sync(dry_run: bool = False, verbose: bool = False) -> dict:
 def domo_sync(dry_run: bool = False, verbose: bool = False) -> dict:
     """Run the existing sync-memory-to-domo script.
 
+    Fetches Domo credentials from Infisical if not already in env.
     Returns a dict with counts: {uploaded, skipped, errors, total}.
     """
     if not DOMO_SYNC_SCRIPT.exists():
@@ -143,6 +231,25 @@ def domo_sync(dry_run: bool = False, verbose: bool = False) -> dict:
     if verbose:
         print("Domo: Starting sync...")
 
+    # Build env for Domo sync — fetch from Infisical if needed
+    domo_env = dict(os.environ)
+    domo_env.setdefault("DOMO_INSTANCE", "domo-community")
+    domo_env.setdefault("DOMO_FILESET_ID", "c0b71cf1-7be3-4340-b021-b3b18eab2f14")
+
+    if not domo_env.get("DOMO_ACCESS_TOKEN"):
+        if verbose:
+            print("Domo: DOMO_ACCESS_TOKEN not set, fetching from Infisical...")
+        secrets = fetch_infisical_secrets()
+        # Infisical stores it as DOMO-COMMUNITY_ACCESS_TOKEN
+        token = secrets.get("DOMO-COMMUNITY_ACCESS_TOKEN") or secrets.get("DOMO_COMMUNITY_ACCESS_TOKEN")
+        if token:
+            domo_env["DOMO_ACCESS_TOKEN"] = token
+            if verbose:
+                print("Domo: Got token from Infisical")
+        else:
+            print("ERROR: Could not get DOMO_ACCESS_TOKEN from Infisical")
+            return {"uploaded": 0, "skipped": 0, "errors": 1, "total": 0}
+
     # Run as subprocess to avoid import issues
     cmd = [sys.executable, str(DOMO_SYNC_SCRIPT)]
     if dry_run:
@@ -150,11 +257,11 @@ def domo_sync(dry_run: bool = False, verbose: bool = False) -> dict:
     if verbose:
         cmd.append("--verbose")
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    
+    result = subprocess.run(cmd, capture_output=True, text=True, env=domo_env)
+
     if verbose and result.stdout:
         print(result.stdout)
-    
+
     if result.returncode != 0:
         print(f"ERROR: Domo sync failed: {result.stderr}")
         return {"uploaded": 0, "skipped": 0, "errors": 1, "total": 0}
