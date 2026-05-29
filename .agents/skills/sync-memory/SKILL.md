@@ -1,45 +1,81 @@
 ---
 name: sync-memory
-description: Push agent memory files to the Domo fileset for AI Search. Use when the user says /sync-memory or asks to sync memory to Domo.
+description: >
+  Push agent memory files to Domo fileset (AI Search) and Google Docs. Commits
+  any uncommitted changes first. Use for: "/sync-memory", "push memory",
+  "sync to domo", "backup memory".
+metadata:
+  version: 1.0.0
+  updated: 2026-05-29
 ---
 
-# Sync Memory to Domo
+# sync-memory
 
-Push the agent's MemFS markdown files to a Domo fileset, making them available for Domo AI Search.
+Sync agent memory to Domo fileset (AI Search) and Google Docs. Commits uncommitted changes first.
 
 ## When to Use
 
-- User says `/sync-memory`
-- User asks to sync/push memory to Domo
-- After making significant memory changes that should be reflected in Domo
+- `/sync-memory` — push memory to Domo + GDocs
+- User asks to "sync memory", "push memory to Domo", "backup memory"
 
-## Execution
+## Steps
+
+### 1. Commit uncommitted memory changes
 
 ```bash
-# 1. Get Domo credentials from Infisical if not already set
-# DOMO-COMMUNITY_ACCESS_TOKEN from Infisical (hostinger VPS project, prod env)
-
-# 2. Set env vars
-export DOMO_INSTANCE=domo-community
-export DOMO_ACCESS_TOKEN=<from infisical>
-export DOMO_FILESET_ID=c0b71cf1-7be3-4340-b021-b3b18eab2f14
-# MEMORY_DIR is set by the Letta agent runtime
-
-# 3. Dry run first
-python /workspace/.agents/runbooks/sync-memory-to-domo/scripts/main.py --dry-run --verbose
-
-# 4. If dry run looks correct, do the real sync
-python /workspace/.agents/runbooks/sync-memory-to-domo/scripts/main.py --verbose
+cd "$MEMORY_DIR"
+git add -A
+git commit -m "chore: memory sync $(date +%Y-%m-%d)" || echo "Nothing to commit"
 ```
 
-## Runbook
+### 2. Push to remote (if auth working)
 
-Full runbook with troubleshooting: [[runbooks/sync-memory-to-domo/SKILL.md]]
+```bash
+git push 2>&1 || echo "Push failed — local commit saved"
+```
 
-## Fileset Details
+Note: Memory push to `letta-ai/agent-memory.git` may fail due to GitHub auth issues. Local commit is still valid.
 
-- **Fileset ID:** `c0b71cf1-7be3-4340-b021-b3b18eab2f14`
-- **Instance:** `domo-community`
-- **Direction:** MemFS → Domo (push only, MemFS is authoritative)
-- **Directories synced:** `system/`, `reference/`
-- **File types:** `.md`, `.txt`, `.csv`, `.json`, `.yaml`, `.yml`
+### 3. Sync to Domo fileset
+
+Uses existing runbook: `.agents/runbooks/sync-memory-stores/`
+
+```bash
+python3 .agents/runbooks/sync-memory-stores/scripts/sync_to_domo.py
+```
+
+This pushes memory files to Domo fileset for AI Search. Requires:
+- `DOMO_CLIENT_ID` + `DOMO_CLIENT_SECRET` (from Infisical)
+- Fileset ID configured in runbook
+
+### 4. Sync to Google Docs
+
+Uses existing runbook: `datacrew/.agents/runbooks/sync-memory-gdocs/`
+
+```bash
+cd /workspace/datacrew
+python3 .agents/runbooks/sync-memory-gdocs/scripts/sync_to_gdocs.py
+```
+
+Creates/updates tabs in a Google Doc with memory contents.
+
+## Configuration
+
+| Variable | Source | Description |
+|----------|--------|-------------|
+| `MEMORY_DIR` | env | Agent memory directory (usually `~/.letta/agents/<id>/memory`) |
+| `DOMO_CLIENT_ID` | Infisical | Domo API auth |
+| `DOMO_CLIENT_SECRET` | Infisical | Domo API auth |
+| `GDOC_CLIENT` + `GDOC_TOKEN` | Infisical | Google Docs auth |
+
+## Gotchas
+
+- **Memory push may fail** — GitHub auth on `letta-ai/agent-memory.git` is flaky. Local commits are still valid.
+- **Domo sync requires valid tokens** — check `DOMO_CLIENT_ID` + `DOMO_CLIENT_SECRET` in Infisical
+- **Run from correct directories** — Domo sync from workspace root, GDocs sync from datacrew/
+
+## Related
+
+- `sync-memory-stores` runbook (`.agents/runbooks/sync-memory-stores/`) — Domo sync
+- `sync-memory-gdocs` runbook (`datacrew/.agents/runbooks/sync-memory-gdocs/`) — GDocs sync
+- `check-mdrag` — health check for mdrag (separate from memory sync)
