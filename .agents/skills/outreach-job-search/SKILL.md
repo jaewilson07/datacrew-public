@@ -42,7 +42,7 @@ cd /workspace/datacrew/projects/job-search
 JOB_SEARCH_SLACK_BOT_TOKEN=$DATACREW_SLACK_BOT_TOKEN \
 JOB_SEARCH_SLACK_CHANNEL_ID=C0B23VA3CJY \
 PYTHONPATH=src:/workspace/datacrew \
-python3 run_scoring.py --yolo
+.venv/bin/python3 run_scoring.py --yolo
 ```
 
 The `--yolo` flag enables autonomous execution — no approval needed per step.
@@ -50,7 +50,7 @@ The `--yolo` flag enables autonomous execution — no approval needed per step.
 **What the pipeline does:**
 1. **Scrape** — Pull recent jobs from configured sources (7-day window)
 2. **L1 (KeywordScorer)** — Fast regex filter: seniority + hard_blocks cut noise
-3. **L2 (OllamaScorer)** — Local LLM scoring via `gemma3:12b` at the Ollama endpoint
+3. **L2 (LettaScorer w/ Ollama backend)** — Local LLM scoring via `gemma3:12b` at the Ollama endpoint
 4. **Post** — Format top results and post to Slack via `SlackJobPoster`
 
 ### Step 3: Verify Slack post
@@ -65,13 +65,13 @@ cd /workspace/datacrew/projects/job-search
 JOB_SEARCH_SLACK_BOT_TOKEN=$DATACREW_SLACK_BOT_TOKEN \
 JOB_SEARCH_SLACK_CHANNEL_ID=C0B23VA3CJY \
 PYTHONPATH=src:/workspace/datacrew \
-python3 run_scoring.py --yolo
+.venv/bin/python3 run_scoring.py --yolo
 
 # Score only (no Slack post)
 JOB_SEARCH_SLACK_BOT_TOKEN=$DATACREW_SLACK_BOT_TOKEN \
 JOB_SEARCH_SLACK_CHANNEL_ID=C0B23VA3CJY \
 PYTHONPATH=src:/workspace/datacrew \
-python3 run_scoring.py --yolo --no-post
+.venv/bin/python3 run_scoring.py --yolo --no-post
 ```
 
 ## Pipeline Architecture
@@ -79,7 +79,7 @@ python3 run_scoring.py --yolo --no-post
 | Layer | Scorer | Method | Speed |
 |-------|--------|--------|-------|
 | L1 | KeywordScorer | Regex: seniority + hard_blocks | Fast |
-| L2 | OllamaScorer | Local LLM (`gemma3:12b`) | ~30s/job |
+| L2 | LettaScorer (Ollama backend) | Local LLM (`gemma3:12b`) | ~30s/job |
 | L3 | LettaScorer | Letta API (fallback, credits exhausted) | N/A |
 
 **Profile:** `profiles/jae-consultant-fte.yaml`
