@@ -81,7 +81,7 @@ await tabs.upsert(document_id="1tmx0eNoHlsgh1xRdnpq9BBDaHhiYr9hlYHLic-d7vw", tit
 ### 5. Sync to Slack Canvas
 
 ```bash
-python3 .agents/runbooks/update-retrospective/scripts/main.py --sync
+/workspace/datacrew/.venv/bin/python3 .agents/runbooks/update-retrospective/scripts/main.py --sync
 ```
 
 Or directly via cboti:

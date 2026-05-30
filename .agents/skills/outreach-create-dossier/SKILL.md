@@ -57,7 +57,7 @@ If duplicates found:
 cd /workspace/datacrew
 SCRIPTS=projects/domo-customer-outreach/scripts
 
-uv run --project $SCRIPTS $SCRIPTS/research/06_research_company.py \
+PYTHONPATH=$SCRIPTS .venv/bin/python3 $SCRIPTS/research/06_research_company.py \
   --company "Company Name"
 ```
 
@@ -73,7 +73,7 @@ or the user must specify it. The LinkedIn URL can be passed for enrichment.
 cd /workspace/datacrew
 SCRIPTS=projects/domo-customer-outreach/scripts
 
-uv run --project $SCRIPTS $SCRIPTS/output/07_create_dossier.py \
+PYTHONPATH=$SCRIPTS .venv/bin/python3 $SCRIPTS/output/07_create_dossier.py \
   --company "Company Name" \
   --from-research data/EXPORTS/research/{company_slug}/research.json
 ```
@@ -103,7 +103,7 @@ drive.share_file(doc_id, "jae@datacrew.space", "writer")
 cd /workspace/datacrew
 SCRIPTS=projects/domo-customer-outreach/scripts
 
-uv run --project $SCRIPTS $SCRIPTS/output/09_sync_contacts.py \
+PYTHONPATH=$SCRIPTS .venv/bin/python3 $SCRIPTS/output/09_sync_contacts.py \
   --company "Company Name" \
   --from-research data/EXPORTS/research/{company_slug}/research.json
 ```
@@ -125,12 +125,12 @@ cd /workspace/datacrew
 SCRIPTS=projects/domo-customer-outreach/scripts
 
 # Full pipeline (single company)
-uv run --project $SCRIPTS $SCRIPTS/research/06_research_company.py --company "Company"
-uv run --project $SCRIPTS $SCRIPTS/output/07_create_dossier.py --company "Company" --from-research data/EXPORTS/research/company/research.json
-uv run --project $SCRIPTS $SCRIPTS/output/09_sync_contacts.py --company "Company" --from-research data/EXPORTS/research/company/research.json
+PYTHONPATH=$SCRIPTS .venv/bin/python3 $SCRIPTS/research/06_research_company.py --company "Company"
+PYTHONPATH=$SCRIPTS .venv/bin/python3 $SCRIPTS/output/07_create_dossier.py --company "Company" --from-research data/EXPORTS/research/company/research.json
+PYTHONPATH=$SCRIPTS .venv/bin/python3 $SCRIPTS/output/09_sync_contacts.py --company "Company" --from-research data/EXPORTS/research/company/research.json
 
 # Orchestration script (alternative)
-uv run --project $SCRIPTS $SCRIPTS/../../.agents/runbooks/generate-domo-customer-outreach/scripts/main.py research --company "Company"
+PYTHONPATH=$SCRIPTS .venv/bin/python3 $SCRIPTS/../../.agents/runbooks/generate-domo-customer-outreach/scripts/main.py research --company "Company"
 ```
 
 ## Environment Variables
@@ -162,6 +162,7 @@ uv run --project $SCRIPTS $SCRIPTS/../../.agents/runbooks/generate-domo-customer
 - **Slack `search.messages` requires user token (xoxp-)**, not bot token
 - **letta synthesis can return empty fields** — that's intentional; renderer skips them cleanly
 - **Blockquotes (`> `) are stripped in Google Docs** — use `**Label:**` + regular paragraph instead
+- **Use `PYTHONPATH=$SCRIPTS .venv/bin/python3`** — NOT `uv run --project` (doesn't add scripts dir to PYTHONPATH, causes `ModuleNotFoundError: No module named 'crew_config'`)
 
 ## Related
 
