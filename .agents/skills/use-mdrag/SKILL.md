@@ -73,13 +73,13 @@ mdrag POST /api/v1/crawl/site     -d '{"url":"https://example.com","max_depth":2
 mdrag GET  "/api/v1/wiki/search?q=topic&semantic=true"      # search the wiki
 mdrag POST /api/v1/wiki/compile   -d '{...}'                # compile pages → articles
 mdrag POST /api/v1/research       -d '{"topic":"...","wait":true}'   # synchronous research (wait:true blocks ≤30s; omit for async 202 + job)
+mdrag POST /api/v1/searxng/search -d '{"query":"...","result_count":5}'  # web search via SearXNG
 ```
 
 `crawl_site` is capped at 20 pages — for large ingests use the background ingest workflow, not this.
 
-> **Note — web search and query_rag have NO REST route.** `search_web` (SearXNG) and
-> `query_rag` are only available over MCP (see the next section). Don't POST to
-> `/api/v1/searxng/search` or `/api/v1/query` — the former 404s and the latter requires an
+> **Note — web search works over REST (`/api/v1/searxng/search`) or the `search_web` MCP
+> tool.** Only `query_rag` is MCP-only: don't POST to `/api/v1/query` — it requires an
 > `org_id` filter the MCP path supplies for you automatically.
 
 ## Full tool set incl. query_rag + browser (MCP over HTTP)
