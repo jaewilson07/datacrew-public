@@ -137,8 +137,8 @@ PYTHONPATH=$SCRIPTS .venv/bin/python3 $SCRIPTS/../../.agents/runbooks/generate-d
 
 | Variable | Source | Purpose |
 |----------|--------|---------|
-| `SLACK_BOT_TOKEN` | `datacrew/.env` | Slack API (xoxb-) |
-| `DATACREW_SLACK_USER_OAUTH_TOKEN` | `datacrew/.env` | Slack search.messages (xoxp-) |
+| `SLACK_BOT_TOKEN` | Infisical `de8b26a4` dev `/` (DUG workspace) | Slack API (xoxb-) |
+| `DATACREW_SLACK_USER_OAUTH_TOKEN` | Infisical `3fbb4296` dev `/` | Slack search.messages (xoxp-) |
 | `GDOC_CLIENT` | Infisical `bd78c29a` prod | Google OAuth client JSON |
 | `GDOC_TOKEN` | Infisical `bd78c29a` prod | Google OAuth token JSON |
 | `DC_API_TOKEN` | Infisical `3fbb4296` prod `/mdrag` | mdrag MCP auth |
