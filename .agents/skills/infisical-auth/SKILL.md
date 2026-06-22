@@ -41,7 +41,7 @@ ssh deploy@187.77.216.108 \
      --client-id 8b6a5698-61ff-4f0e-a403-3df29f667f31 \
      --client-secret 015fd0cb965de429d310bf73536d1884b178ef8023ae8c9f97c394f213bad72d \
      --plain 2>/dev/null)" && \
-   cd /home/deploy/workspaces/simpleDiscordBot/infrastructure/vps && \
+   cd /home/deploy/workspaces/simpleDiscordBot/infrastructure/bonker && \
    uv run --no-project python setup/hostinger/deploy_docker_containers.py \
      local letta-code-channels-datacrew-public'
 ```
@@ -72,7 +72,7 @@ infisical export --projectId 3fbb4296-d4e6-4c17-83ee-b852a57a5e50 \
 ### Step 2: Deploy the container
 
 ```bash
-cd /home/deploy/workspaces/simpleDiscordBot/infrastructure/vps
+cd /home/deploy/workspaces/simpleDiscordBot/infrastructure/bonker
 uv run --no-project python setup/hostinger/deploy_docker_containers.py \
   local letta-code-channels-datacrew-public
 ```
@@ -115,8 +115,8 @@ Look for: `Registered successfully` and `Connected. Awaiting instructions.`
 ## References
 
 - `.env` — machine identity credentials (INFISICAL_CLIENT_ID, INFISICAL_CLIENT_SECRET, INFISICAL_PROJECT_ID)
-- Deploy script: `infrastructure/vps/setup/hostinger/deploy_docker_containers.py`
-- Compose: `infrastructure/vps/apps/letta-code-channels-datacrew-public/docker-compose.yml`
+- Deploy script: `infrastructure/bonker/setup/hostinger/deploy_docker_containers.py`
+- Compose: `infrastructure/bonker/apps/letta-code-channels-datacrew-public/docker-compose.yml`
 - Infisical dashboard: `https://infisical.datacrew.space/organizations/e899ebbe-5c41-4d53-b1ce-28cd18db1987/projects/secret-management/de8b26a4-8d69-46fa-bb32-9715ab396d6f/overview`
 
 ## Related Skills

@@ -22,10 +22,8 @@ import json
 import os
 import re
 import sqlite3
-import sys
 from datetime import datetime
 
-import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -47,9 +45,11 @@ def doc_url(doc_id, source_url=None):
         return None
     return f"{DOMO_SUPPORT_BASE}/{doc_id}?language=en_US"
 
+
 # ---------------------------------------------------------------------------
 # Search modes
 # ---------------------------------------------------------------------------
+
 
 def fts_search(cur, query, top_n=5):
     """Full-text search using SQLite FTS5."""
@@ -192,8 +192,7 @@ def entity_search(cur, query, top_n=5):
 def get_doc_entities(cur, doc_id, top_n=10):
     """Get NER entities for a specific doc."""
     cur.execute(
-        "SELECT entity_text, entity_label FROM doc_entities "
-        "WHERE doc_id = ? ORDER BY entity_text",
+        "SELECT entity_text, entity_label FROM doc_entities " "WHERE doc_id = ? ORDER BY entity_text",
         (doc_id,),
     )
     entities = {}
@@ -205,8 +204,7 @@ def get_doc_entities(cur, doc_id, top_n=10):
 def get_doc_keywords(cur, doc_id, top_n=10):
     """Get TF-IDF keywords for a specific doc."""
     cur.execute(
-        "SELECT term, tfidf_score FROM doc_keywords "
-        "WHERE doc_id = ? ORDER BY tfidf_score DESC LIMIT ?",
+        "SELECT term, tfidf_score FROM doc_keywords " "WHERE doc_id = ? ORDER BY tfidf_score DESC LIMIT ?",
         (doc_id, top_n),
     )
     return [(r[0], round(r[1], 4)) for r in cur.fetchall()]
@@ -216,8 +214,8 @@ def get_doc_keywords(cur, doc_id, top_n=10):
 # Query logging + wiki generation
 # ---------------------------------------------------------------------------
 
-def log_query(question, docs_found, doc_ids_used, answer_quality, channel=None,
-              correction=None, wiki_page_id=None):
+
+def log_query(question, docs_found, doc_ids_used, answer_quality, channel=None, correction=None, wiki_page_id=None):
     """Log a query to the knowledge store for wiki prioritization.
 
     Args:
@@ -285,10 +283,12 @@ def check_and_generate_wiki(cur, question, doc_ids_used, answer_quality, correct
         # Update existing wiki page with new correction if provided
         if correction:
             existing_corrections = json.loads(existing[2]) if existing[2] else []
-            existing_corrections.append({
-                "text": correction,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            existing_corrections.append(
+                {
+                    "text": correction,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
             cur.execute(
                 "UPDATE wiki_pages SET corrections = ?, updated_at = ? WHERE page_id = ?",
                 (json.dumps(existing_corrections), datetime.utcnow().isoformat(), slug),
@@ -299,10 +299,12 @@ def check_and_generate_wiki(cur, question, doc_ids_used, answer_quality, correct
     # The actual content will be filled in by the agent when it reads the source docs
     # and synthesizes the answer. This just creates the entry.
     content = f"# {question}\n\n"
-    content += f"*This wiki page was auto-generated because the knowledge store "
-    content += f"{'could not find a good answer' if answer_quality == 'miss' else 'required synthesis across multiple docs'} "
-    content += f"for this question.*\n\n"
-    content += f"## Source Documents\n\n"
+    content += "*This wiki page was auto-generated because the knowledge store "
+    content += (
+        f"{'could not find a good answer' if answer_quality == 'miss' else 'required synthesis across multiple docs'} "
+    )
+    content += "for this question.*\n\n"
+    content += "## Source Documents\n\n"
 
     for doc_id in doc_ids_used:
         cur.execute("SELECT title, category FROM docs WHERE doc_id = ?", (doc_id,))
@@ -310,11 +312,11 @@ def check_and_generate_wiki(cur, question, doc_ids_used, answer_quality, correct
         if row:
             content += f"- [{row[1]}] {row[0]}\n"
 
-    content += f"\n## Answer\n\n"
-    content += f"*To be filled in from the agent's synthesized response.*\n"
+    content += "\n## Answer\n\n"
+    content += "*To be filled in from the agent's synthesized response.*\n"
 
     if correction:
-        content += f"\n## Community Corrections\n\n"
+        content += "\n## Community Corrections\n\n"
         content += f"- {correction}\n"
         corrections_json = json.dumps([{"text": correction, "timestamp": datetime.utcnow().isoformat()}])
     else:
@@ -405,7 +407,7 @@ def get_wiki_priorities(min_questions=1):
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT 
+        SELECT
             question,
             answer_quality,
             COUNT(*) as times_asked,
@@ -415,21 +417,23 @@ def get_wiki_priorities(min_questions=1):
         FROM query_log
         WHERE answer_quality IN ('partial', 'miss')
         GROUP BY question
-        ORDER BY 
+        ORDER BY
             corrections_count DESC,
             times_asked DESC
     """)
 
     priorities = []
     for row in cur.fetchall():
-        priorities.append({
-            "question": row[0],
-            "quality": row[1],
-            "times_asked": row[2],
-            "corrections_count": row[3],
-            "all_doc_ids": row[4],
-            "corrections": row[5],
-        })
+        priorities.append(
+            {
+                "question": row[0],
+                "quality": row[1],
+                "times_asked": row[2],
+                "corrections_count": row[3],
+                "all_doc_ids": row[4],
+                "corrections": row[5],
+            }
+        )
 
     conn.close()
     return priorities
@@ -438,6 +442,7 @@ def get_wiki_priorities(min_questions=1):
 # ---------------------------------------------------------------------------
 # Main search function (used by agent)
 # ---------------------------------------------------------------------------
+
 
 def search(query, top_n=5, mode="hybrid", channel=None):
     """Search the Domo docs knowledge store.
@@ -466,9 +471,7 @@ def search(query, top_n=5, mode="hybrid", channel=None):
     # Enrich results with entities, keywords, and source URLs
     for r in results:
         if "doc_id" in r and "content" not in r:
-            cur.execute(
-                "SELECT clean_content FROM docs WHERE doc_id = ?", (r["doc_id"],)
-            )
+            cur.execute("SELECT clean_content FROM docs WHERE doc_id = ?", (r["doc_id"],))
             row = cur.fetchone()
             r["content"] = row[0] if row else ""
         # Add source URL
@@ -485,13 +488,16 @@ def search(query, top_n=5, mode="hybrid", channel=None):
     wiki = cur.fetchone()
     if wiki:
         # Prepend wiki page as first result
-        results.insert(0, {
-            "doc_id": f"wiki:{wiki[0]}",
-            "title": f"[WIKI] {query}",
-            "category": "wiki",
-            "content": wiki[1],
-            "score": 1.0,  # Wiki pages always rank highest
-        })
+        results.insert(
+            0,
+            {
+                "doc_id": f"wiki:{wiki[0]}",
+                "title": f"[WIKI] {query}",
+                "category": "wiki",
+                "content": wiki[1],
+                "score": 1.0,  # Wiki pages always rank highest
+            },
+        )
 
     conn.close()
     return results
@@ -500,6 +506,7 @@ def search(query, top_n=5, mode="hybrid", channel=None):
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+
 
 def main():
     parser = argparse.ArgumentParser(description="Query the Domo docs knowledge store")
@@ -521,7 +528,8 @@ def main():
     parser.add_argument("--correction", type=str, help="Community correction text")
     parser.add_argument("--channel", type=str, help="DUG Slack channel")
     parser.add_argument(
-        "--priorities", action="store_true",
+        "--priorities",
+        action="store_true",
         help="Show wiki generation priorities based on query log",
     )
     args = parser.parse_args()
@@ -535,7 +543,7 @@ def main():
             for p in priorities:
                 print(f"[{p['quality']}] {p['question']}")
                 print(f"  Asked {p['times_asked']}x, {p['corrections_count']} corrections")
-                if p['corrections']:
+                if p["corrections"]:
                     print(f"  Corrections: {p['corrections'][:100]}")
                 print()
         return

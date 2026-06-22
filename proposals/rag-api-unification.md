@@ -1,8 +1,8 @@
 # Proposal: Unify RAG Backend + Wikki Frontend APIs
 
-**Author:** datacrew-cloud  
-**Date:** 2026-05-26  
-**Status:** Draft  
+**Author:** datacrew-cloud
+**Date:** 2026-05-26
+**Status:** Draft
 
 ---
 
@@ -66,34 +66,34 @@ The Wikki frontend (`wikki.datacrew.space`) and the mdrag RAG backend (`mdrag.da
 
 **Goal:** Make existing Wikki features actually work end-to-end.
 
-1. **Add `org_id` to all proxied requests**  
-   - Default to `datacrew` (or resolve from auth context)  
-   - Pass in `namespace.org_id` for ingest, `filters.org_id` for query  
+1. **Add `org_id` to all proxied requests**
+   - Default to `datacrew` (or resolve from auth context)
+   - Pass in `namespace.org_id` for ingest, `filters.org_id` for query
    - Without this, data ingested from Wikki is unscoped and unqueryable
 
-2. **Proxy the RAG query endpoint**  
-   - Add `POST /api/query` → `POST /api/v1/query` (with `org_id` filter)  
+2. **Proxy the RAG query endpoint**
+   - Add `POST /api/query` → `POST /api/v1/query` (with `org_id` filter)
    - This is the **most important missing proxy** — it's how agents and the UI get grounded answers
 
-3. **Proxy wiki search**  
-   - Add `GET /api/wiki/search` → `GET /api/v1/wiki/search`  
+3. **Proxy wiki search**
+   - Add `GET /api/wiki/search` → `GET /api/v1/wiki/search`
    - The wiki has a search feature that Wikki doesn't expose
 
-4. **Fix health endpoint**  
+4. **Fix health endpoint**
    - Proxy `/api/v1/health` (overall health) instead of only `/api/v1/health/vector-db`
 
 ### Phase 2: Full API Passthrough (3-5 days)
 
 **Goal:** Wikki becomes the single public API surface for mdrag. All backend endpoints accessible through Wikki's domain.
 
-1. **Replace individual proxy routes with a catch-all proxy**  
-   - Single Next.js catch-all route: `/api/v1/[...path]` → `${BACKEND_URL}/api/v1/[...path]`  
-   - Preserves the `/api/v1/` prefix for consistency  
-   - Eliminates the need to write a new proxy route for every backend endpoint  
+1. **Replace individual proxy routes with a catch-all proxy**
+   - Single Next.js catch-all route: `/api/v1/[...path]` → `${BACKEND_URL}/api/v1/[...path]`
+   - Preserves the `/api/v1/` prefix for consistency
+   - Eliminates the need to write a new proxy route for every backend endpoint
    - Keep explicit routes only where transformation is needed (e.g., auth injection, org_id defaults)
 
-2. **Add auth middleware to the proxy layer**  
-   - Inject `CF-Access-Client-Id` / `CF-Access-Client-Secret` for backend calls that go through CF Access  
+2. **Add auth middleware to the proxy layer**
+   - Inject `CF-Access-Client-Id` / `CF-Access-Client-Secret` for backend calls that go through CF Access
    - Or: since Wikki and mdrag are on the same Docker network, use `BACKEND_URL=http://rag-agent:8017` (internal) and skip CF Access entirely
 
 3. **Add missing high-value proxies** (explicit routes with transforms):
@@ -105,25 +105,25 @@ The Wikki frontend (`wikki.datacrew.space`) and the mdrag RAG backend (`mdrag.da
    - `POST /api/v1/wiki/compile` — compile wiki articles
    - `POST /api/v1/wiki/lint` — wiki quality checks
 
-4. **Deprecate the old `/api/` (no v1) routes**  
-   - Add 301 redirects from `/api/wiki/*` → `/api/v1/wiki/*` etc.  
+4. **Deprecate the old `/api/` (no v1) routes**
+   - Add 301 redirects from `/api/wiki/*` → `/api/v1/wiki/*` etc.
    - Remove the old individual proxy files once redirects are in place
 
 ### Phase 3: MCP Bridge + Agent Integration (5-7 days)
 
 **Goal:** Agents can use Wikki as their API surface, and Wikki can trigger agent workflows.
 
-1. **MCP proxy endpoint**  
-   - `POST /api/v1/mcp/invoke` — invoke any MCP tool by name with JSON params  
-   - Agents already use mdrag's MCP tools; this lets the Wikki UI do the same  
+1. **MCP proxy endpoint**
+   - `POST /api/v1/mcp/invoke` — invoke any MCP tool by name with JSON params
+   - Agents already use mdrag's MCP tools; this lets the Wikki UI do the same
    - Returns the same 12k-char-limited responses
 
-2. **Agent webhook integration**  
-   - Wikki can configure webhooks that trigger agent actions on ingest completion  
+2. **Agent webhook integration**
+   - Wikki can configure webhooks that trigger agent actions on ingest completion
    - e.g., "when a URL is ingested, notify the datacrew-cloud agent to update the wiki"
 
-3. **WebSocket for real-time updates**  
-   - Research jobs, ingestion jobs, and wiki compilation can push status updates to the Wikki UI  
+3. **WebSocket for real-time updates**
+   - Research jobs, ingestion jobs, and wiki compilation can push status updates to the Wikki UI
    - Replaces the current polling pattern for job status
 
 ---

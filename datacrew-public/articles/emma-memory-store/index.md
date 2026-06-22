@@ -26,7 +26,7 @@ graph TD
     D --> E[Reference docs, User profiles, Troubleshooting]
     B -->|Need history?| F[Recall / Conversation History]
     F --> G[Searchable via SQLite + FTS5]
-    
+
     C --> H[Generate Response]
     E --> H
     G --> H

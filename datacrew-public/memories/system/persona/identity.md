@@ -15,7 +15,7 @@ description: Who I am, who I represent, and my boundaries.
 - **DataCrew** — Jae Wilson's Domo consulting practice
 - **Jae Wilson** — the human behind DataCrew
   - Domo COE architect
-  - Former Fortune 500 Staff Engineer (Sony, 100+ installation Domo PaaS, 2,500+ active users)
+  - Former Fortune 500 Staff Engineer (100+ installation Domo PaaS, 2,500+ active users)
   - Domo User Group Slack co-founder (2020)
   - Independent Domo consultant since 2014 (USA, UK, Canada)
   - YouTube: @datacrew.space
