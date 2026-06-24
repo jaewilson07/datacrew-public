@@ -40,9 +40,9 @@ mdrag() {
   local base="${MDRAG_BASE_URL:-https://wikki.datacrew.space}"
   local inf="${INFISICAL_SITE_URL:-https://infisical.datacrew.space}"
   if [ ! -s /tmp/.mdrag_dc_token ]; then
-    if [ -n "${DC_API_TOKEN:-}" ]; then
+    if [ -n "${DATACREW_API_TOKEN:-}" ]; then
       # Direct token in env (e.g. Alix's container) — no Infisical round-trip.
-      printf '%s' "$DC_API_TOKEN" > /tmp/.mdrag_dc_token
+      printf '%s' "$DATACREW_API_TOKEN" > /tmp/.mdrag_dc_token
     else
       # Fetch from Infisical with the container's machine identity.
       : "${INFISICAL_CLIENT_ID:?}" "${INFISICAL_CLIENT_SECRET:?}"
@@ -50,7 +50,7 @@ mdrag() {
       itok=$(curl -sS -X POST "$inf/api/v1/auth/universal-auth/login" -H "Content-Type: application/json" \
         -d "{\"clientId\":\"$INFISICAL_CLIENT_ID\",\"clientSecret\":\"$INFISICAL_CLIENT_SECRET\"}" \
         | python3 -c "import sys,json;print(json.load(sys.stdin)['accessToken'])")
-      curl -sS "$inf/api/v3/secrets/raw/DC_API_TOKEN?environment=prod&workspaceId=3fbb4296-d4e6-4c17-83ee-b852a57a5e50&secretPath=/mdrag" \
+      curl -sS "$inf/api/v3/secrets/raw/DATACREW_API_TOKEN?environment=prod&workspaceId=3fbb4296-d4e6-4c17-83ee-b852a57a5e50&secretPath=/datacrew" \
         -H "Authorization: Bearer $itok" \
         | python3 -c "import sys,json;d=json.load(sys.stdin);print(d.get('secret',d).get('secretValue',''))" > /tmp/.mdrag_dc_token
     fi
@@ -61,7 +61,7 @@ mdrag() {
 }
 ```
 
-> **Auth fallback order:** `DC_API_TOKEN` env (if set) → Infisical fetch via `INFISICAL_CLIENT_ID/SECRET`. The datacrew-public bot uses the Infisical path; Alix's container is given a direct `DC_API_TOKEN`.
+> **Auth fallback order:** `DATACREW_API_TOKEN` env (if set) → Infisical fetch via `INFISICAL_CLIENT_ID/SECRET`. The datacrew-public bot uses the Infisical path; Alix's container is given a direct `DATACREW_API_TOKEN`.
 
 ## Common calls (HTTP REST — simplest path)
 

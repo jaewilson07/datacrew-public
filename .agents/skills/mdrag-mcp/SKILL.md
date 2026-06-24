@@ -48,7 +48,7 @@ Authorization: Bearer dc_<service-token>
 
 Service tokens are no-expiry JWTs issued by the datacrew.space identity service.
 Get one at `https://datacrew.space/account` (Log in → Developer → Service tokens → Create).
-The canonical agent token is stored in Infisical at `homeserver:/mdrag` as `DC_API_TOKEN`.
+The canonical agent token is stored in Infisical at `homeserver:/datacrew` as `DATACREW_API_TOKEN`.
 
 Anonymous requests get HTTP 401. Tokens with insufficient scope get HTTP 403.
 
@@ -87,7 +87,7 @@ Anonymous requests get HTTP 401. Tokens with insufficient scope get HTTP 403.
 
 ```bash
 curl -s https://wikki.datacrew.space/api/v1/health \
-  -H "Authorization: Bearer $DC_API_TOKEN"
+  -H "Authorization: Bearer $DATACREW_API_TOKEN"
 ```
 
 ### Python (search)
@@ -96,7 +96,7 @@ curl -s https://wikki.datacrew.space/api/v1/health \
 import os, requests
 
 headers = {
-    "Authorization": f"Bearer {os.environ['DC_API_TOKEN']}",
+    "Authorization": f"Bearer {os.environ['DATACREW_API_TOKEN']}",
 }
 
 resp = requests.post(

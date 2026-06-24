@@ -32,7 +32,7 @@ Use mdrag MCP to extract the job posting content:
 ```bash
 # Via mdrag MCP
 curl -sS -X POST "https://wikki.datacrew.space/api/v1/mcp/tools/crawl_url" \
-  -H "Authorization: Bearer $DC_API_TOKEN" \
+  -H "Authorization: Bearer $DATACREW_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"url": "<job-url>", "js_render": true}'
 ```
@@ -120,7 +120,7 @@ Report back to user:
 |----------|--------|---------|
 | `GDOC_CLIENT` | Infisical `bd78c29a` prod | Google OAuth client JSON |
 | `GDOC_TOKEN` | Infisical `bd78c29a` prod | Google OAuth token JSON |
-| `DC_API_TOKEN` | Infisical `3fbb4296` prod `/mdrag` | mdrag MCP auth |
+| `DATACREW_API_TOKEN` | Infisical `3fbb4296` prod `/datacrew` | mdrag MCP auth |
 
 ## Key IDs
 

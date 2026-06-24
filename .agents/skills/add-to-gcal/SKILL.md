@@ -36,9 +36,9 @@ Determine: natural language description vs event URL.
 **If event URL** — use mdrag `extract_calendar_event_from_url`:
 
 ```bash
-# Get DC_API_TOKEN (see research skill for auth flow)
+# Get DATACREW_API_TOKEN (see research skill for auth flow)
 curl -sS -X POST "https://wikki.datacrew.space/api/v1/calendar/extract-event-from-url" \
-  -H "Authorization: Bearer $DC_API_TOKEN" \
+  -H "Authorization: Bearer $DATACREW_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"url": "https://lu.ma/ai-summit-2026", "timezone": "America/Denver"}'
 ```

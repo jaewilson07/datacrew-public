@@ -30,10 +30,10 @@ INFISICAL_TOKEN=$(curl -sS -X POST "https://infisical.datacrew.space/api/v1/auth
   | python3 -c "import sys,json; print(json.load(sys.stdin)['accessToken'])")
 ```
 
-### 2. Get DC_API_TOKEN from Infisical
+### 2. Get DATACREW_API_TOKEN from Infisical
 
 ```bash
-DC_API_TOKEN=$(curl -sS "https://infisical.datacrew.space/api/v3/secrets/raw/DC_API_TOKEN?environment=prod&workspaceId=3fbb4296-d4e6-4c17-83ee-b852a57a5e50&secretPath=/mdrag" \
+DATACREW_API_TOKEN=$(curl -sS "https://infisical.datacrew.space/api/v3/secrets/raw/DATACREW_API_TOKEN?environment=prod&workspaceId=3fbb4296-d4e6-4c17-83ee-b852a57a5e50&secretPath=/datacrew" \
   -H "Authorization: Bearer $INFISICAL_TOKEN" \
   | python3 -c "import sys,json; data=json.load(sys.stdin); print(data.get('secret',data).get('secretValue',''))")
 ```
@@ -44,7 +44,7 @@ DC_API_TOKEN=$(curl -sS "https://infisical.datacrew.space/api/v3/secrets/raw/DC_
 
 ```bash
 curl -sS "https://wikki.datacrew.space/api/v1/health" \
-  -H "Authorization: Bearer $DC_API_TOKEN"
+  -H "Authorization: Bearer $DATACREW_API_TOKEN"
 ```
 
 Expected response:
@@ -56,7 +56,7 @@ Expected response:
 
 ```bash
 SESSION_ID=$(curl -sS -D - -X POST "https://wikki.datacrew.space/mcp/" \
-  -H "Authorization: Bearer $DC_API_TOKEN" \
+  -H "Authorization: Bearer $DATACREW_API_TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"datacrew-agent","version":"1.0"}}}' \
@@ -69,7 +69,7 @@ echo "Session ID: $SESSION_ID"
 
 ```bash
 curl -sS -X POST "https://wikki.datacrew.space/mcp/" \
-  -H "Authorization: Bearer $DC_API_TOKEN" \
+  -H "Authorization: Bearer $DATACREW_API_TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
   -H "Mcp-Session-Id: $SESSION_ID" \
@@ -91,7 +91,7 @@ for line in sys.stdin:
 
 ```bash
 curl -sS -X POST "https://wikki.datacrew.space/mcp/" \
-  -H "Authorization: Bearer $DC_API_TOKEN" \
+  -H "Authorization: Bearer $DATACREW_API_TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
   -H "Mcp-Session-Id: $SESSION_ID" \

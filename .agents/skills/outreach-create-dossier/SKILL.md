@@ -141,7 +141,7 @@ PYTHONPATH=$SCRIPTS .venv/bin/python3 $SCRIPTS/../../.agents/runbooks/generate-d
 | `DATACREW_SLACK_USER_OAUTH_TOKEN` | Infisical `3fbb4296` dev `/` | Slack search.messages (xoxp-) |
 | `GDOC_CLIENT` | Infisical `bd78c29a` prod | Google OAuth client JSON |
 | `GDOC_TOKEN` | Infisical `bd78c29a` prod | Google OAuth token JSON |
-| `DC_API_TOKEN` | Infisical `3fbb4296` prod `/mdrag` | mdrag MCP auth |
+| `DATACREW_API_TOKEN` | Infisical `3fbb4296` prod `/datacrew` | mdrag MCP auth |
 
 **Never `source datacrew/.env`** — JSON values break `source`. Use `grep VAR file | cut -d= -f2-` or Python `os.environ`.
 
